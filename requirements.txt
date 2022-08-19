@@ -1,0 +1,2 @@
+bs4>=0.0.1
+hurry.filesize>=0.9
