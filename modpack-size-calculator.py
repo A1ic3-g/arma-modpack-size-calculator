@@ -35,11 +35,9 @@ if __name__ == "__main__":
     
     # Read modpack html file into a single string
     with open(modpack_path, 'r') as f:
-        modpack_string =  f.read()
+        # Parse the html string into a BeautifulSoup object
+        html_soup = BeautifulSoup(f, 'html.parser')
 
-    # Parse the html string into a BeautifulSoup object
-    html_soup = BeautifulSoup(modpack_string, 'html.parser')
-    
     # Get mod IDs of all mods in the modpack
     modpack_ids = []
     for link in html_soup.find_all('a'):
