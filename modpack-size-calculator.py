@@ -2,11 +2,14 @@ import os
 from bs4 import BeautifulSoup
 from hurry.filesize import filesize
 
+# substring of Steam workshop url that marks the start of the steam workshop ID
 ID_START = '?id='
 
 # Getsize courtesy of monkut on stackoverflow
 # https://stackoverflow.com/questions/1392413/calculating-a-directorys-size-using-python
 def get_size(start_path = '.'):
+    """Gets the size in bytes of a given file or folder (recursive)
+        start_path = the path of the folder to get size of"""
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
@@ -21,17 +24,21 @@ def get_size(start_path = '.'):
 
 if __name__ == "__main__":
 
+    # Get modpack path from user
     modpack_found = False
     while modpack_found == False: 
+        # Get user input
         modpack_path = str(input("Enter path to modpack .html file: "))
         if os.path.exists(modpack_path):
             modpack_found = True 
         else:
             print("File not found, please try again")
     
+    # Read modpack html file into a single string
     with open(modpack_path, 'r') as f:
         modpack_string =  f.read()
 
+    # Parse the html string into a BeautifulSoup object
     html_soup = BeautifulSoup(modpack_string, 'html.parser')
     
     # Get mod IDs of all mods in the modpack
@@ -61,9 +68,7 @@ if __name__ == "__main__":
     mod_sizes = []
     for modpack_id in modpack_ids:
         mod_path = os.path.join(workshop_folder_path, modpack_id)
-        print(mod_path)
         size = get_size(start_path=mod_path)
-        print(size)
         total_size += size
         mod_sizes.append(size)
 
