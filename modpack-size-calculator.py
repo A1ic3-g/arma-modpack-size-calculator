@@ -1,6 +1,7 @@
 import os
 from bs4 import BeautifulSoup
 from hurry.filesize import filesize
+import pandas
 
 # substring of Steam workshop url that marks the start of the steam workshop ID
 ID_START = '?id='
@@ -38,13 +39,24 @@ if __name__ == "__main__":
         # Parse the html string into a BeautifulSoup object
         html_soup = BeautifulSoup(f, 'html.parser')
 
+
+    # Setup pandas dataframe to store modpack info
+    modpack_df = pandas.DataFrame(columns=['ID', 'Name', 'Size'])
+
     # Get mod IDs of all mods in the modpack
-    modpack_ids = []
-    for link in html_soup.find_all('a'):
-        page = link.get('href')
+    for mod in html_soup.find_all('tr'):
+
+        # Get the Name of the mod
+        mod_name_td = mod.find('td', {'data-type': 'DisplayName'})
+        mod_name = mod_name_td.get_text()
+
+        # Get the ID of the mod
+        page = mod.find('a').get('href')
         id_loc = page.find(ID_START)
         id = page[id_loc+len(ID_START):]
-        modpack_ids.append(id)
+
+        # Append to modpack_df using pd.concat()
+        modpack_df = pandas.concat([modpack_df, pandas.DataFrame(data={'ID': [id], 'Name': [mod_name], 'Size': [0]})], ignore_index=True)
 
     # Get workshop folder containing mods
     # Typically steamapps/workshop/content/107410
@@ -60,15 +72,26 @@ if __name__ == "__main__":
             print("please ensure you're NOT entering your !WORKSHOP folder path")
             print("A typical true workshop folder path looks like steamapps\workshop\content\\107410")
 
+    print(modpack_df)
     # Get all the folder sizes
     total_size = 0
-    mod_sizes = []
-    for modpack_id in modpack_ids:
-        mod_path = os.path.join(workshop_folder_path, modpack_id)
+    for row in modpack_df.iterrows():
+        mod_row = row[1]
+
+        print(mod_row)
+        mod_path = os.path.join(workshop_folder_path, mod_row['ID'])
         size = get_size(start_path=mod_path)
         total_size += size
-        mod_sizes.append(size)
+        
+        # insert size into dataframe for current mod
+        modpack_df.loc[mod_row.name, 'Size'] = size
 
 
     print(f"Traditional 1024 scale (used by windows): {filesize.size(total_size)}")
-    print(f"SI 1000 scale: {filesize.size(total_size, system=filesize.si)}")
+    print(f"SI 1000 scale: {filesize.size(total_size, system=filesize.si)}\n")
+
+    modpack_df.sort_values(by='Size', ascending=False, inplace=True)
+    modpack_df['Size'] = modpack_df['Size'].apply(lambda x: x/1024**2)
+
+    with pandas.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(modpack_df)
