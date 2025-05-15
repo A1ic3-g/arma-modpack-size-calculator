@@ -1,40 +1,44 @@
-# Arma 3 Modpack Size Calculator
+# 📦 Arma 3 Modpack Size Calculator
 
-Simple script to calculate how much disk space an Arma 3 modpack uses.
+A simple script to calculate how much disk space an Arma 3 modpack uses by scanning each subscribed mod’s workshop folder.
 
-> **NOTE:** For all scripts, the workshop path required is the one inside the `SteamLibrary\workshop\content\107410` folder — **not** the `!WORKSHOP` folder in the Arma installation directory. The `107410` folder corresponds to the Steam game ID for Arma 3.
+> **Important:** The workshop path must be the one inside `SteamLibrary\steamapps\workshop\content\107410`  
+> **Do not use** the `!WORKSHOP` folder inside the Arma 3 installation directory.  
+>
+> `107410` is the Steam App ID for Arma 3.
 
-## Windows (PowerShell)
 
-1. Place your modpack `.html` file exported from the Arma 3 launcher in the same folder as this script. This makes it easier to reference the file when prompted.
+## 🪟 Windows (PowerShell)
 
-2. Run the `arma-modpack-size-windows.ps1` script. You can do this by:
+1. Place your exported Arma 3 modpack `.html` file in the same folder as the script. This makes it easier to locate when prompted.
 
-    - Double-clicking the script in File Explorer (a PowerShell window will open), or
-    - Running it manually from a PowerShell terminal.
+2. Run `arma-modpack-size-windows.ps1` by either:
+    - Double-clicking it in File Explorer, **or**
+    - Running it from a PowerShell terminal.
 
-3. When prompted, enter the name or path of your modpack HTML file.
+3. When prompted:
+    - Enter the name or path of your modpack HTML file.  
+      If it's in the same folder, just type the filename (e.g. `modpack.html`).
 
-    - If the file is in the same folder as the script, just type the filename (e.g. `modpack.html`).
+4. When asked for the **workshop folder path**, provide the location where Steam stores Arma 3 workshop content.  
+   This should end in `\workshop\content\107410`. Common examples:
 
-4. When asked for the Arma 3 workshop folder path, provide the location where Steam stores downloaded workshop mods for Arma 3.
-    This path should end in \workshop\content\107410, for example:
+    - Default C: drive installation:
 
-    - On a default Steam installation on the C: drive:
+      ```txt
+      C:\Program Files (x86)\Steam\steamapps\workshop\content\107410
+      ```
 
-        ```txt
-        C:\Program Files (x86)\Steam\steamapps\workshop\content\107410
-        ```
+    - Secondary drive (e.g. D:):
 
-    - On a secondary drive (e.g. D:)
+      ```txt
+      D:\SteamLibrary\steamapps\workshop\content\107410
+      ```
 
-        ```txt
-        D:\SteamLibrary\steamapps\workshop\content\107410
-        ```
+5. The script will display a table of mod sizes and the total usage, then pause with a `"Press Enter to exit"` prompt.
 
-5. Once complete, the script will display a table showing each mod's size and total usage.
 
-## Linux (Bash)
+## 🐧 Linux (Bash)
 
 1. Make the script executable:
 
@@ -42,31 +46,37 @@ Simple script to calculate how much disk space an Arma 3 modpack uses.
     chmod +x arma-modpack-size-linux.sh
     ```
 
-2. Run it from the terminal:
+2. Run the script:
 
     ```bash
     ./arma-modpack-size-linux.sh
     ```
 
-3. Provide the path to the Arma 3 modpack HTML file exported from the launcher.
+3. Provide the full path to your exported modpack HTML file when prompted.
 
-4. When prompted, enter the path to your Steam workshop content folder, typically:
+4. When asked for the **workshop folder path**, it is typically:
 
     ```bash
-    ~/.steam/steam/SteamApps/workshop/content/107410
+    ~/.steam/steam/steamapps/workshop/content/107410
     ```
 
-5. The script will parse the mod list, check each mod's folder size, and output a table sorted by size in megabytes.
+5. The script will scan each mod folder, compute sizes, and display a table sorted by size in MB.
 
-## System-agnostic (Python)
+## 🐍 System-Agnostic (Python)
 
-This version runs on both Windows and Linux systems and is ideal if you already have Python installed. It's also useful if you want to generate graphs using matplotlib, or export the data to a CSV file for visualisation in spreadsheet software such as Excel.
+This version works on **Windows**, **Linux**, or **macOS** and is recommended if:
 
-The python script has been moved to the `python` subfolder since for most users this will be harder to use.
+- You already have Python installed
+- You want to export mod sizes as CSV
+- You plan to generate graphs using `matplotlib`
+- You want more flexibility in scripting or automation
 
-### Usage
+📁 The script is located in the `python/` subfolder for clarity, as it’s typically used by more advanced users.
 
-1. Install the required Python packages:
+
+### 🔧 Usage
+
+1. Install dependencies:
 
     ```bash
     pip install -r requirements.txt
@@ -75,7 +85,9 @@ The python script has been moved to the `python` subfolder since for most users 
 2. Run the script:
 
     ```bash
-    python3 arma-modpack-size-tool.py
+    python3 python/arma-modpack-size-tool.py
     ```
 
-3. Enter the path to the exported modpack `.html` file and the workshop folder path (`SteamLibrary/workshop/content/107410`) when prompted.
+3. When prompted:
+    - Enter the path to your exported modpack `.html` file
+    - Enter the path to the Arma 3 workshop folder (e.g. `SteamLibrary/workshop/content/107410`)
