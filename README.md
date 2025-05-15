@@ -37,7 +37,6 @@ A simple script to calculate how much disk space an Arma 3 modpack uses by scann
 
 5. The script will display a table of mod sizes and the total usage, then pause with a `"Press Enter to exit"` prompt.
 
-
 ## 🐧 Linux (Bash)
 
 1. Make the script executable:
@@ -64,15 +63,13 @@ A simple script to calculate how much disk space an Arma 3 modpack uses by scann
 
 ## 🐍 System-Agnostic (Python)
 
-This version works on **Windows**, **Linux**, or **macOS** and is recommended if:
+This version works on **Windows** or **Linux** and is recommended if:
 
-- You already have Python installed
 - You want to export mod sizes as CSV
 - You plan to generate graphs using `matplotlib`
 - You want more flexibility in scripting or automation
 
-📁 The script is located in the `python/` subfolder for clarity, as it’s typically used by more advanced users.
-
+📁 The script is located in the `python/` subfolder for clarity, as it’s only recommended for more advanced users.
 
 ### 🔧 Usage
 
