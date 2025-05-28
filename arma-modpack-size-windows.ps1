@@ -35,7 +35,7 @@ foreach ($mod in $rows) {
         $modName = $modNameNode.InnerText.Trim()
         $link = $mod.getElementsByTagName("a") | Select-Object -First 1
         if ($link) {
-            $href = $link.href
+            $href = $link.getAttribute("href")
             $idIndex = $href.IndexOf($ID_START)
             if ($idIndex -ge 0) {
                 $id = $href.Substring($idIndex + $ID_START.Length)
