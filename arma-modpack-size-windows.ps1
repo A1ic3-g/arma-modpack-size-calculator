@@ -71,14 +71,14 @@ for ($i = 0; $i -lt $modpack.Count; $i++) {
 
 # Sort and display table
 $modpack |
-    Sort-Object Size -Descending |
+    Sort-Object Size |
     Select-Object ID, Name, @{Name="Size (MB)"; Expression={[math]::Round($_.Size / 1MB, 2)}} |
     Format-Table -AutoSize
 
 # Display total sizes
-$windowsScale = [math]::Round($totalSize / 1KB / 1KB, 2)
-$siScale = [math]::Round($totalSize / 1MB, 2)
-Write-Host "`nTraditional 1024 scale (used by Windows): $windowsScale MB"
-Write-Host "SI 1000 scale: $siScale MB`n"
+
+$totalGb = [math]::Round($totalSize / 1GB, 2)
+
+Write-Host "`nTotal Size: $totalGb GB"
 
 Read-Host -Prompt "Press Enter to exit"
