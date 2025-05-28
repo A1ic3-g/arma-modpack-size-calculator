@@ -7,7 +7,6 @@ A simple script to calculate how much disk space an Arma 3 modpack uses by scann
 >
 > `107410` is the Steam App ID for Arma 3.
 
-
 ## 🪟 Windows (PowerShell)
 
 1. Place your exported Arma 3 modpack `.html` file in the same folder as the script. This makes it easier to locate when prompted.
@@ -39,27 +38,40 @@ A simple script to calculate how much disk space an Arma 3 modpack uses by scann
 
 ## 🐧 Linux (Bash)
 
-1. Make the script executable:
+1. Install `XMLStarlet` a commandline tool for parsing XML style documents.
+    
+    ```bash
+    # Debian/Ubuntu
+    sudo apt install xmlstarlet
+
+    # Arch
+    sudo pacman -S xmlstarlet
+
+    # Fedora
+    sudo dnf install xmlstarlet
+    ```
+
+2. Make the script executable:
 
     ```bash
     chmod +x arma-modpack-size-linux.sh
     ```
 
-2. Run the script:
+3. Run the script:
 
     ```bash
     ./arma-modpack-size-linux.sh
     ```
 
-3. Provide the full path to your exported modpack HTML file when prompted.
+4. Provide the full path to your exported modpack HTML file when prompted.
 
-4. When asked for the **workshop folder path**, it is typically:
+5. When asked for the **workshop folder path**, it is typically:
 
     ```bash
     ~/.steam/steam/steamapps/workshop/content/107410
     ```
 
-5. The script will scan each mod folder, compute sizes, and display a table sorted by size in MB.
+6. The script will scan each mod folder, compute sizes, and display a table sorted by size in MB.
 
 ## 🐍 System-Agnostic (Python)
 

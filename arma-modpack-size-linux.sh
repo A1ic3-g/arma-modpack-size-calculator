@@ -1,11 +1,9 @@
 #!/bin/bash
 
-ID_START="?id="
-
 get_size_bytes() {
     local dir="$1"
     if [[ -d "$dir" ]]; then
-        du -sb "$dir" 2>/dev/null | awk '{print $1}'
+        du -sb "$dir" 2>/dev/null | cut -f1
     else
         echo 0
     fi
@@ -14,6 +12,7 @@ get_size_bytes() {
 # Prompt for modpack HTML
 while true; do
     read -rp "Enter path to modpack .html file: " modpack_path
+    modpack_path="${modpack_path/#\~/$HOME}"  # expand ~ manually
     if [[ -f "$modpack_path" ]]; then
         break
     else
@@ -21,35 +20,54 @@ while true; do
     fi
 done
 
-# Extract mod names and IDs
-mapfile -t mods < <(grep -A2 'data-type="DisplayName"' "$modpack_path" | \
-    paste - - - | \
-    sed -E 's|.*data-type="DisplayName">([^<]+).*filedetails/\?id=([0-9]+).*|\2\t\1|')
-
-# Prompt for workshop folder
+# Prompt for workshop path
 while true; do
     read -rp "Enter Arma 3 workshop folder path (e.g. ~/Steam/steamapps/workshop/content/107410): " workshop_path
-    if [[ -d "$workshop_path" && "$workshop_path" != *"!WORKSHOP"* ]]; then
+    workshop_path="${workshop_path/#\~/$HOME}"  # expand ~ manually
+    if [[ -d "$workshop_path" ]]; then
         break
     else
-        echo "Invalid folder. Please make sure you're entering the actual Steam workshop content folder, not !WORKSHOP."
+        echo "Directory not found, please try again."
     fi
 done
 
-# Process each mod
-printf "ID\tName\tSize (MB)\n"
-total_size=0
-for line in "${mods[@]}"; do
-    mod_id=$(echo "$line" | cut -f1)
-    mod_name=$(echo "$line" | cut -f2)
-    mod_dir="${workshop_path}/${mod_id}"
-    size_bytes=$(get_size_bytes "$mod_dir")
-    size_mb=$(awk -v s="$size_bytes" 'BEGIN { printf "%.2f", s / (1024 * 1024) }')
-    total_size=$((total_size + size_bytes))
-    printf "%s\t%s\t%s\n" "$mod_id" "$mod_name" "$size_mb"
-done | sort -k3 -nr
+# Check for xmlstarlet
+if ! command -v xmlstarlet &>/dev/null; then
+    echo "This script requires 'xmlstarlet'. Please install it first (e.g., sudo apt install xmlstarlet)."
+    exit 1
+fi
 
-# Total summary
+# Temporary file to store results
+tempfile=./tmp #$(mktemp)
+total_bytes=0
+
+# Extract mod names and hrefs, then process
+mapfile -t lines < <(xmlstarlet sel -t -m '//tr[@data-type="ModContainer"]' \
+    -v 'td[@data-type="DisplayName"]' -o $'\t' \
+    -v 'td/a/@href' -n "$modpack_path")
+
+for line in "${lines[@]}"; do
+    IFS=$'\t' read -r name href <<< "$line"
+    id=$(echo "$href" | grep -oP 'id=\K\d+')
+    if [[ -n "$id" ]]; then
+        path="$workshop_path/$id"
+        size_bytes=$(get_size_bytes "$path")
+        total_bytes=$((total_bytes + size_bytes))
+        size_mb=$(awk -v b="$size_bytes" 'BEGIN { printf "%.2f", b / (1024*1024) }')
+        echo -e "${id}\t${name}\t${size_mb}" >> "$tempfile"
+    fi
+done
+
+# Print table
+printf "%-12s %-45s %10s\n" "ID" "Name" "Size (MB)"
+sort -t $'\t' -k3,3n "$tempfile" |
+while IFS=$'\t' read -r id name size; do
+    printf "%-12s %-45s %10s\n" "$id" "$name" "$size"
+done
+
+rm "$tempfile"
+
+# Print total size in GB
+total_gb=$(awk -v b="$total_bytes" 'BEGIN { printf "%.2f", b / (1024*1024*1024) }')
 echo
-echo "Traditional 1024 scale (used by Windows): $((total_size / 1024 / 1024)) MB"
-echo "SI 1000 scale: $((total_size / 1000 / 1000)) MB"
+echo "Total size: $total_gb GB"
