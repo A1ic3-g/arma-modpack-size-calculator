@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
 
 jobs:
   release:
-    if: github.event_name != 'pull_request' || (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
 
     permissions:
