@@ -38,6 +38,8 @@ A simple script to calculate how much disk space an Arma 3 modpack uses by scann
 
 ## 🐧 Linux (Bash)
 
+> **Note:** The Powershell ("Windows") version also works on Linux if you install the cross platform powershell but for most Linux users I thought Bash would be more familiar.
+
 1. Install `XMLStarlet` a commandline tool for parsing XML style documents.
     
     ```bash
